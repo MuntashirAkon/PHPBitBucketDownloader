@@ -40,25 +40,26 @@ class BitBucketDownloader
      * Downloads the requested file from BitBucket
      *
      * @param string $search Should contain the filename syntax (ie. Demo-1209 may have Demo)
-     * @param string $to     Path to save the downloaded file
+     * @param string $target Path to save the downloaded file
      * @return array|bool False on failure and an array containing file location and filename
      */
-    public function getFile($search, $to = '/tmp'){
+    public function getFile($search, $target = '/tmp'){
         $files = $this->loadFiles();
         $latest_time  = null;
-        $desired_file = null;
+        $desired_url = null;
+        if($files == null) return false;
         foreach($files as $file){
             if(preg_match("/^(.*)({$search})(.*)$/", $file["name"])){
                 if($latest_time < $file['time']){
-                    $latest_time  = $file['time'];
-                    $desired_file = $file['name'];
+                    $latest_time = $file['time'];
+                    $desired_url = $file['name'];
                 }
             }
         }
-        if($desired_file != null){
-            $to   = "{$to}/{$desired_file}";
-            $file = "{$this->url}{$desired_file}";
-            return $this->download($file, $to) ? ["file" => $to, "filename" => $desired_file] : false;
+        if($desired_url != null){
+            $target = $target . '/' . basename($desired_url);
+            $file   = $desired_url;
+            return $this->download($file, $target) ? ["file" => $target, "filename" => $desired_url] : false;
         }
         return false;
     }
@@ -92,12 +93,12 @@ class BitBucketDownloader
     /**
      * Generates a available file list
      *
-     * @return array|null A list of files or null
+     * @return array|null A list of files (files[][name] and files[][time]) or null
      */
     protected function loadFiles(){
         $files = array();
         $table = $this->HTMLFile->getElementById("uploaded-files");
-        if(!$table->hasChildNodes()) return null;
+        if($table == null OR !$table->hasChildNodes()) return null;
         /** @var \DOMElement $innerTable */
         foreach($table->childNodes as $innerTable){
             if($innerTable->nodeName == "tbody"){

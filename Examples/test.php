@@ -11,3 +11,4 @@ require_once __DIR__."/../BitBucketDownloader.php";
 $BBD = new BitBucketDownloader("RehabMan", "os-x-maciasl-patchmatic");
 
 var_dump($BBD->getFile("patchmatic"));
+//var_dump($BBD->getFile("FakeSMC"));
