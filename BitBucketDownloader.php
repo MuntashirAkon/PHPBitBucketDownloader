@@ -57,9 +57,10 @@ class BitBucketDownloader
             }
         }
         if($desired_url != null){
-            $target = $target . '/' . basename($desired_url);
-            $file   = $desired_url;
-            return $this->download($file, $target) ? ["file" => $target, "filename" => $desired_url] : false;
+			$desired_url = basename($desired_url);
+			$target = $target . '/' . $desired_url;
+			$file   = $this->url . '/' . $desired_url;
+			return $this->download($file, $target) ? ["file" => $target, "filename" => $desired_url] : false;
         }
         return false;
     }
